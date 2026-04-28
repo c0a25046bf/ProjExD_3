@@ -220,7 +220,7 @@ def main():
             bomb.update(screen)
         pg.display.update()
         score.update(screen)
-        pg.display.updat()
+        pg.display.update()
         tmr += 1
         clock.tick(50)
 
