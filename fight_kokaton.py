@@ -249,7 +249,7 @@ def main():
         for bomb in bombs:
             bomb.update(screen)
         for exp in explosions:
-            exp.update(scree)
+            exp.update(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1
