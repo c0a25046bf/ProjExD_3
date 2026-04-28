@@ -161,7 +161,31 @@ class Score:
         self.img = self.fonto.render(f"Score: {self.score}", 0, self.color)
         screen.blit(self.img, self.rct)
 
+class Explosion:
+    """
+    爆発に関するクラス
+    """
+    def __init__(self, center: tuple[int, int], life: int = 50):
+        """
+        爆発エフェクト画像を初期化する
+        引数1 center：爆発した爆弾の中心座標
+        引数2 life：爆発エフェクトの表示時間（フレーム数）
+        """
+        img = pg.image.load("fig/explosion.gif")
+        self.imgs = [img, pg.transform.flip(img, True, True)]
+        self.rct = self.imgs[0].get_rect()
+        self.rct.center = center
+        self.life = life
 
+    def update(self, screen: pg.Surface):
+        """
+        爆発経過時間lifeを1減算し、正なら画像を切り替えて描画する
+        引数 screen：画面Surface
+        """
+        self.life -= 1
+        if self.life > 0:
+            img_idx = (self.life // 5) % 2
+            screen.blit(self.imgs[img_idx], self.rct)
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -171,8 +195,8 @@ def main():
     for i in range(NOM_OF_BOMBS):
             bomb = (Bomb((255, 0, 0), 10))
             bombs.append(bomb)
-    bomb = Bomb((255, 0, 0), 10)
     beams = []  # ゲーム初期化時にはビームは存在しない
+    explosions = []  # 爆発エフェクトのリスト
     score = Score()
     clock = pg.time.Clock()
 
@@ -203,6 +227,7 @@ def main():
             for j,beam in enumerate(beams):
                 if beam is not None:
                     if beam.rct.colliderect(bomb.rct):  # 練習2：爆弾とビームの衝突判定
+                        explosions.append(Explosion(bomb.rct.center, 50))
                         beam = None
                         bombs[i] = None
                         score.score += 1
@@ -213,6 +238,8 @@ def main():
         bombs = [bomb for bomb in bombs if bomb is not None]
         beams = [beam for beam in beams if beam is not None]
 
+        explosions = [exp for exp in explosions if exp.life > 0]
+
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
 
@@ -221,6 +248,8 @@ def main():
         beams = [beam for beam in beams if check_bound(beam.rct) == (True, True)]
         for bomb in bombs:
             bomb.update(screen)
+        for exp in explosions:
+            exp.update(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1
