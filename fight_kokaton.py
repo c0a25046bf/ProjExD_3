@@ -88,7 +88,7 @@ class Bird:
         screen.blit(self.img, self.rct)
 
 
-class Beam:
+class Beam:#練習２
     """
     こうかとんが放つビームに関するクラス
     """
